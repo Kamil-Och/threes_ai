@@ -51,7 +51,7 @@ class Board:
         pass
     
     def sum_score(self, value):
-        pass
+        pass 
     
     
 if __name__ == "__main__":
