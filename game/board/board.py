@@ -4,14 +4,15 @@ class Board:
     def __init__(self, rows = 4, columns = 4, seed = None):
         self.tiles = np.zeros((rows, columns), dtype = np.int16)
         self.seed = seed
+        self.rng = np.random.default_rng(self.seed)
         
     def init_board(self):
-        rng = np.random.default_rng(self.seed)
-        initial_tiles = rng.choice(self.tiles.size, 9, replace = False)
+        
+        initial_tiles = self.rng.choice(self.tiles.size, 9, replace = False)
         
         for i, _ in enumerate(self.tiles.flat):
             if i in initial_tiles:
-                self.tiles.flat[i] = rng.choice([1, 2, 3])
+                self.tiles.flat[i] = self.rng.choice([1, 2, 3])
 
     def check_if_can_move(self, first_value, second_value):
         if first_value == 0:
@@ -47,8 +48,29 @@ class Board:
             
         return new_row
     
-    def insert_new_tile(self, value):
+    def insert_new_tile(self, board_tiles, value):
+        #TODO: check if board_tiles is a numpy array
+        
+        indexes = []
+        new_tiles_cords = np.where(board_tiles == -1)
+        for tile_iter in range(len(new_tiles_cords[0])):
+            indexes.append([new_tiles_cords[0][tile_iter], new_tiles_cords[1][tile_iter]])
+            
+        if len(indexes) == 0:
+            return board_tiles
+
+        for index in indexes:
+            board_tiles[index[0], index[1]] = 0
+        
+        new_tile_index = self.rng.choice(indexes)
+        board_tiles[new_tile_index[0], new_tile_index[1]] = value
+        
+        return board_tiles
+    
+    def move_board(self, direction):
         pass
+    
+    
     
     def sum_score(self, value):
         pass 
@@ -57,9 +79,16 @@ class Board:
 if __name__ == "__main__":
     board = Board()
     #print(board.board)
-    print(board.move_row([3, 0, 0, 1]))
-    print(board.move_row([1, 2, 0, 0]))
-    print(board.move_row([0, 0, 1, 2]))
-    print(board.move_row([0, 0, 0, 0]))
-    print(board.move_row([1, 1, 1, 1]))
+    # print(board.move_row([3, 0, 0, 1]))
+    # print(board.move_row([1, 2, 0, 0]))
+    # print(board.move_row([0, 0, 1, 2]))
+    # print(board.move_row([0, 0, 0, 0]))
+    # print(board.move_row([1, 1, 1, 1]))
+    temp_board = np.array([[3, 0, 0, 1], 
+                  [1, 2, 0, 0], 
+                  [0, 0, 1, 2], 
+                  [-1, 0, -1, 0]])
+    
+    print(board.insert_new_tile(temp_board, 1))
+    
     
