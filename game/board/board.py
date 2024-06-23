@@ -1,5 +1,10 @@
 import numpy as np
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from game_enums.move_direction import MoveDirection
 
+#TODO: add board tests
 class Board:
     def __init__(self, rows = 4, columns = 4, seed = None):
         self.tiles = np.zeros((rows, columns), dtype = np.int16)
@@ -14,6 +19,7 @@ class Board:
             if i in initial_tiles:
                 self.tiles.flat[i] = self.rng.choice([1, 2, 3])
 
+    #Function 
     def check_if_can_move(self, first_value, second_value):
         if first_value == 0:
             return True
@@ -26,6 +32,7 @@ class Board:
         else:
             return False
     
+    #Function 
     def move_row(self, row):
         new_row = []
         
@@ -68,12 +75,43 @@ class Board:
         return board_tiles
     
     def move_board(self, direction):
-        pass
+        # chcek if the direction is valid
+        
+        rows_nr, column_nr = self.tiles.shape
+        new_board = np.zeros((rows_nr, column_nr), dtype = np.int16)
+
+        if direction == MoveDirection.UP:
+            for column in range(column_nr):
+                new_board[:, column] = self.move_row(self.tiles[:, column])
+            
+        elif direction == MoveDirection.DOWN:
+            for column in range(column_nr):
+                temp_column = self.tiles[:, column]
+                new_board[:, column] = self.move_row(temp_column[::-1])[::-1]
+                
+        elif direction == MoveDirection.LEFT:
+            for row in range(rows_nr):
+                new_board[row, :] = self.move_row(self.tiles[row, :])
+                
+        elif direction == MoveDirection.RIGHT:
+            for row in range(rows_nr):
+                temp_column = self.tiles[row, :]
+                new_board[row, :] = self.move_row(temp_column[::-1])[::-1]
+                
+        else:
+            return self.tiles
+
+        return new_board
     
-    
-    
-    def sum_score(self, value):
-        pass 
+    def sum_score(self, board_tiles):
+        score = 0
+        
+        for tiles_row in board_tiles:
+            for tile in tiles_row:
+                score += tile
+        
+        return score
+        
     
     
 if __name__ == "__main__":
@@ -87,8 +125,16 @@ if __name__ == "__main__":
     temp_board = np.array([[3, 0, 0, 1], 
                   [1, 2, 0, 0], 
                   [0, 0, 1, 2], 
-                  [-1, 0, -1, 0]])
+                  [0, 0, 0, 0]])
     
-    print(board.insert_new_tile(temp_board, 1))
+    board.tiles = temp_board
+    print(board.sum_score(board.tiles))
+    new_tiles = board.move_board(MoveDirection.UP)
+    print(new_tiles)
+    print(board.sum_score(new_tiles))
+    print(board.insert_new_tile(new_tiles, 3))
+    
+    print(board.sum_score(new_tiles))
+
     
     
