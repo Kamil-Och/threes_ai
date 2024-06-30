@@ -1,8 +1,8 @@
 import numpy as np
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from game_enums.move_direction import MoveDirection
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from threes.game_enums import MoveDirection
 
 #TODO: add board tests
 class Board:
@@ -74,12 +74,12 @@ class Board:
         
         return board_tiles
     
-    def move_board(self, direction):
-        # chcek if the direction is valid
+    def move_board(self, direction: MoveDirection):
+        # TODO: chcek if the direction is valid
         
         rows_nr, column_nr = self.tiles.shape
         new_board = np.zeros((rows_nr, column_nr), dtype = np.int16)
-
+        
         if direction == MoveDirection.UP:
             for column in range(column_nr):
                 new_board[:, column] = self.move_row(self.tiles[:, column])
@@ -97,7 +97,6 @@ class Board:
             for row in range(rows_nr):
                 temp_column = self.tiles[row, :]
                 new_board[row, :] = self.move_row(temp_column[::-1])[::-1]
-                
         else:
             return self.tiles
 
